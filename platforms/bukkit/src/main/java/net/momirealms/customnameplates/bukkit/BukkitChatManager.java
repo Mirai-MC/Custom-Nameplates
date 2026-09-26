@@ -73,8 +73,12 @@ public class BukkitChatManager extends AbstractChatManager {
     @Override
     protected void setUpPlatformEmojiProviders() {
         if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
-            this.emojiProviders.add(new ItemsAdderEmojiProvider());
-            plugin.debug(() -> "ItemsAdderEmojiProvider Enabled");
+            try {
+                this.emojiProviders.add(new ItemsAdderEmojiProvider());
+                plugin.debug(() -> "ItemsAdderEmojiProvider Enabled");
+            } catch (ReflectiveOperationException | LinkageError e) {
+                plugin.getPluginLogger().warn("Failed to enable ItemsAdder emoji support", e);
+            }
         }
         if (Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
             try {

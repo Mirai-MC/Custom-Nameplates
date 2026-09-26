@@ -5,6 +5,8 @@ target/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+/.test/
+
 ### Unfinished ###
 platforms/sponge/
 

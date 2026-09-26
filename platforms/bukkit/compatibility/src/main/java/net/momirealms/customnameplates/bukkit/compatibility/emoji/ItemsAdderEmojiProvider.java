@@ -17,22 +17,33 @@
 
 package net.momirealms.customnameplates.bukkit.compatibility.emoji;
 
-import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
 import net.momirealms.customnameplates.api.CNPlayer;
 import net.momirealms.customnameplates.api.CustomNameplates;
 import net.momirealms.customnameplates.api.feature.chat.emoji.EmojiProvider;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class ItemsAdderEmojiProvider implements EmojiProvider {
+
+    private final Method replaceFontImages;
+
+    public ItemsAdderEmojiProvider() throws ReflectiveOperationException {
+        Class<?> wrapperClass = Class.forName("dev.lone.itemsadder.api.FontImages.FontImageWrapper");
+        this.replaceFontImages = wrapperClass.getMethod("replaceFontImages", Player.class, String.class);
+    }
 
     @Override
     public String replace(CNPlayer player, String text) {
         try {
             CustomNameplates.getInstance().debug(() -> "before: " + text);
-            String result = FontImageWrapper.replaceFontImages((Player) player.player(), text).replace("§f","<white><font:default>").replace("§r","</font></white>");
+            String result = ((String) replaceFontImages.invoke(null, (Player) player.player(), text))
+                    .replace("§f", "<white><font:default>")
+                    .replace("§r", "</font></white>");
             CustomNameplates.getInstance().debug(() -> "after: " + result);
             return result;
-        } catch (NoSuchMethodError ignore) {
+        } catch (IllegalAccessException | InvocationTargetException | LinkageError ignored) {
             return text;
         }
     }

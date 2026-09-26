@@ -49,7 +49,7 @@ public final class BukkitReflectionUtils {
             if (Bukkit.getServer() != null) {
                 try {
                     final Method getMinecraftVersion = serverClass.getDeclaredMethod("getMinecraftVersion");
-                    fallbackVersion = Integer.parseInt(getMinecraftVersion.invoke(Bukkit.getServer()).toString().split("\\.")[1]);
+                    fallbackVersion = majorRevision(getMinecraftVersion.invoke(Bukkit.getServer()).toString());
                 } catch (final Exception ignored) {
                 }
             } else {
@@ -61,7 +61,7 @@ public final class BukkitReflectionUtils {
                     final Method getName = currentVersion.getClass().getDeclaredMethod("getName");
                     final String versionName = (String) getName.invoke(currentVersion);
                     try {
-                        fallbackVersion = Integer.parseInt(versionName.split("\\.")[1]);
+                        fallbackVersion = majorRevision(versionName);
                     } catch (final Exception ignored) {
                     }
                 } catch (final ReflectiveOperationException e) {
@@ -76,6 +76,20 @@ public final class BukkitReflectionUtils {
         name = name.substring(PREFIX_CRAFTBUKKIT.length());
         name = name.substring(0, name.length() - CRAFT_SERVER.length());
         CB_PKG_VERSION = name;
+    }
+
+    /**
+     * Returns the API revision used by the old CraftBukkit package scheme.
+     * Minecraft 1.x uses the second component (1.21 -> 21), while the
+     * year-based version scheme uses the first component (26.3 -> 26).
+     */
+    private static int majorRevision(String minecraftVersion) {
+        final String[] parts = minecraftVersion.split("\\.");
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid Minecraft version: " + minecraftVersion);
+        }
+        final int first = Integer.parseInt(parts[0]);
+        return first == 1 ? Integer.parseInt(parts[1]) : first;
     }
 
     public static String assembleCBClass(String className) {

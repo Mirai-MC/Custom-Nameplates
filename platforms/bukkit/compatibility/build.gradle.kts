@@ -1,7 +1,3 @@
-plugins {
-    id("io.github.goooler.shadow") version "8.1.8"
-}
-
 repositories {
     maven("https://repo.papermc.io/repository/maven-public/") // paper
     maven("https://repo.william278.net/releases/") // husk
@@ -13,7 +9,6 @@ repositories {
     maven("https://repo.opencollab.dev/main/") // geyser
     maven("https://maven.enginehub.org/repo/") // worldguard worldedit
     maven("https://repo.alessiodp.com/releases/") // parties
-    maven("https://maven.devs.beer/") // ia
     maven("https://repo.pinodev.it/releases/") // zelchat
     maven("https://repo.hibiscusmc.com/releases") // hmccosmetics
 }
@@ -28,7 +23,7 @@ dependencies {
     // WorldGuard
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
     // Platform
-    compileOnly("dev.folia:folia-api:${rootProject.properties["paper_version"]}-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:${rootProject.properties["paper_version"]}")
     // Chat
     compileOnly(files("libs/VentureChat-3.7.1.jar"))
     compileOnly(files("libs/TrChat-2.0.11.jar"))
@@ -49,8 +44,6 @@ dependencies {
     compileOnly("it.pino.zelchat:zelchat-api:2.0.0-pre-13")
 //    compileOnly("com.github.Brikster:Chatty:v2.19.14")
     compileOnly(files("libs/Chatty-3.0.0-SNAPSHOT.jar"))
-    // Emoji
-    compileOnly("dev.lone:api-itemsadder:4.0.10")
     compileOnly("io.th0rgal:oraxen:1.217.0")
     // PAPI
     compileOnly("me.clip:placeholderapi:${rootProject.properties["placeholder_api_version"]}")
@@ -68,15 +61,14 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-    options.release.set(21)
-    dependsOn(tasks.clean)
+    options.release.set(25)
 }

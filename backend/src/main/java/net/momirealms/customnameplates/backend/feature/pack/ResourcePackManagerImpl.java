@@ -203,13 +203,9 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
             File file = new File(pluginsFolder, "ItemsAdder" + File.separator + "config.yml");
             YamlDocument iaConfig = plugin.getConfigManager().loadData(file);
             List<String> folders = iaConfig.getStringList("resource-pack.zip.merge_other_plugins_resourcepacks_folders");
-            boolean changed = false;
             if (!folders.contains("CustomNameplates/ResourcePack")) {
                 folders.add("CustomNameplates/ResourcePack");
                 iaConfig.set("resource-pack.zip.merge_other_plugins_resourcepacks_folders", folders);
-                changed = true;
-            }
-            if (changed) {
                 try {
                     iaConfig.save(file);
                 } catch (IOException e) {
@@ -217,10 +213,10 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
                 }
             }
         }
-        if (ConfigManager.packItemsAdderLegacy()){
+        if (ConfigManager.packItemsAdderLegacy()) {
             try {
-                FileUtils.copyDirectory(new File(resourcePackFolder, "assets"), new File(pluginsFolder,  "ItemsAdder" + File.separator + "contents" + File.separator + "nameplates" + File.separator + "resourcepack" + File.separator + "assets") );
-            } catch (IOException e){
+                FileUtils.copyDirectory(new File(resourcePackFolder, "assets"), new File(pluginsFolder, "ItemsAdder" + File.separator + "contents" + File.separator + "nameplates" + File.separator + "resourcepack" + File.separator + "assets"));
+            } catch (IOException e) {
                 plugin.getPluginLogger().warn("Failed to copy files to ItemsAdder", e);
             }
         }
