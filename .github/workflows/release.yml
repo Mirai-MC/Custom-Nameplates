@@ -1,0 +1,54 @@
+name: Build and release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: gradle
+
+      - name: Build
+        run: |
+          chmod +x gradlew
+          git config user.name "github-actions[bot]"
+          ./gradlew clean build
+
+      - name: Locate release JAR
+        id: artifact
+        shell: bash
+        run: |
+          shopt -s nullglob
+          jars=(target/CustomNameplates-Bukkit-*.jar)
+          if (( ${#jars[@]} != 1 )); then
+            echo "Expected exactly one CustomNameplates Bukkit JAR in target/, found ${#jars[@]}" >&2
+            exit 1
+          fi
+          echo "path=${jars[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          ARTIFACT: ${{ steps.artifact.outputs.path }}
+        run: |
+          gh release create "$RELEASE_TAG" "$ARTIFACT" \
+            --verify-tag \
+            --title "$RELEASE_TAG" \
+            --generate-notes
